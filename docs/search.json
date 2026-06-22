@@ -2,30 +2,58 @@
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "プロフィール",
+    "title": "About",
     "section": "",
     "text": "日本語 · Writing\nI’m Ken Osumi (大角 健), founder of FoldArc."
   },
   {
-    "objectID": "about.html#selected-publications",
-    "href": "about.html#selected-publications",
+    "objectID": "about.html#what-i-write-here",
+    "href": "about.html#what-i-write-here",
     "title": "About",
-    "section": "Selected publications",
-    "text": "Selected publications\n\nOsumi K, Kujirai T, Ehara H, et al. Structural Basis of Damaged Nucleotide Recognition by Transcribing RNA Polymerase II in the Nucleosome. J Mol Biol 435(13):168130 (2023).\nOsumi K, Sato K, Murano K, Siomi H, Siomi MC. Essential roles of Windei and nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing. EMBO Reports 20(12):e48296 (2019).\nAkatsu M, Ehara H, Kujirai T, et al. (incl. Osumi K). Cryo-EM structures of RNA polymerase II–nucleosome complexes rewrapping transcribed DNA. J Biol Chem 299(12):105477 (2023)."
+    "section": "What I write here",
+    "text": "What I write here\nI read the internal representations of protein language models — ESMC and its sparse-autoencoder features — and try to turn them into residue-level, falsifiable hypotheses about molecular mechanism. This blog is where I do that in the open: reproductions, methods, and the occasional wrong guess. The bet behind it is simple — a model trained only on sequence has quietly learned a great deal of biology, and most of it is still waiting to be read."
+  },
+  {
+    "objectID": "about.html#background",
+    "href": "about.html#background",
+    "title": "About",
+    "section": "Background",
+    "text": "Background\nMy training is in structural and chromatin biology. I did my PhD at the University of Tokyo in Hiroshi Kurumizaka’s lab, using cryo-EM to study how RNA polymerase II transcribes through nucleosomes and recognizes damaged nucleotides; before that, in the Siomi lab, I worked on transposon silencing and the regulation of SETDB1. I was a JSPS Research Fellow (DC2) and a University of Tokyo WINGS-LST fellow.\nSelected publications\n\nOsumi K, Kujirai T, Ehara H, et al. Structural Basis of Damaged Nucleotide Recognition by Transcribing RNA Polymerase II in the Nucleosome. J Mol Biol 435(13):168130 (2023).\nOsumi K, Sato K, Murano K, Siomi H, Siomi MC. Essential roles of Windei and nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing. EMBO Reports 20(12):e48296 (2019).\nAkatsu M, Ehara H, Kujirai T, et al. (incl. Osumi K). Cryo-EM structures of RNA polymerase II–nucleosome complexes rewrapping transcribed DNA. J Biol Chem 299(12):105477 (2023)."
+  },
+  {
+    "objectID": "about.html#foldarc",
+    "href": "about.html#foldarc",
+    "title": "About",
+    "section": "FoldArc",
+    "text": "FoldArc\nThe day job. FoldArc designs de novo protein binders — small proteins you can express inside a cell to switch off a single protein–protein interaction while leaving everything else intact. De novo protein probes for cell biology. This blog is the other half of that work."
   },
   {
     "objectID": "ja/about.html",
     "href": "ja/about.html",
     "title": "プロフィール",
     "section": "",
-    "text": "English · 記事一覧\n大角 健(おおすみ けん)。FoldArc 代表。構造生物学と 機械学習の解釈性の境目で仕事をしています。タンパク質言語モデル(ESMC と、その スパースオートエンコーダ特徴)の内部表現を読み解き、残基レベルで反証可能な 分子機構の仮説に落とすことに取り組んでいます。\n専門は構造生物学とクロマチン生物学です。東京大学の胡桃坂仁志研究室で博士号を 取得し、クライオ電子顕微鏡を使って、RNA ポリメラーゼ II がヌクレオソームを 越えて転写する仕組みや、損傷ヌクレオチドを認識する機構を研究しました。それ以前は 塩見研究室で、トランスポゾンのサイレンシングと SETDB1 の制御を扱っていました。 日本学術振興会 特別研究員(DC2)、東京大学 WINGS-LST フェロー。\nFoldArc では、エピジェネティクス・クロマチン制御に関わる標的に対する de novo タンパク質バインダー設計の AI パイプラインを開発しています。このブログはその 仕事のもう半分——タンパク質言語モデルが実際のところ何を学んだのかを、一つずつ 再現しながら公の場で考える場所です。"
+    "text": "English · 記事一覧\n大角 健(おおすみ けん)、FoldArc 代表です。"
   },
   {
-    "objectID": "ja/about.html#主な論文",
-    "href": "ja/about.html#主な論文",
+    "objectID": "ja/about.html#このブログで書いていること",
+    "href": "ja/about.html#このブログで書いていること",
     "title": "プロフィール",
-    "section": "主な論文",
-    "text": "主な論文\n\nOsumi K, Kujirai T, Ehara H, et al. Structural Basis of Damaged Nucleotide Recognition by Transcribing RNA Polymerase II in the Nucleosome. J Mol Biol 435(13):168130 (2023).\nOsumi K, Sato K, Murano K, Siomi H, Siomi MC. Essential roles of Windei and nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing. EMBO Reports 20(12):e48296 (2019).\nAkatsu M, Ehara H, Kujirai T, et al. (incl. Osumi K). Cryo-EM structures of RNA polymerase II–nucleosome complexes rewrapping transcribed DNA. J Biol Chem 299(12):105477 (2023)."
+    "section": "このブログで書いていること",
+    "text": "このブログで書いていること\nタンパク質言語モデル(ESMC と、そのスパースオートエンコーダ特徴)の内部表現を 読み解き、それを残基レベルで反証可能な分子機構の仮説に落とすことに取り組んでいます。 このブログは、それを公の場でやる場所です──再現と、手法と、時々の見当違い。背景に ある賭けはシンプルで、「配列だけで訓練されたモデルが、実は膨大な生物学を静かに学んで いて、その大半はまだ読まれずに残っている」というものです。"
+  },
+  {
+    "objectID": "ja/about.html#これまで",
+    "href": "ja/about.html#これまで",
+    "title": "プロフィール",
+    "section": "これまで",
+    "text": "これまで\n専門は構造生物学とクロマチン生物学です。東京大学の胡桃坂仁志研究室で博士号を取得し、 クライオ電子顕微鏡を使って、RNA ポリメラーゼ II がヌクレオソームを越えて転写する仕組みや、 損傷ヌクレオチドを認識する機構を研究しました。それ以前は塩見研究室で、トランスポゾンの サイレンシングと SETDB1 の制御を扱っていました。日本学術振興会 特別研究員(DC2)、 東京大学 WINGS-LST フェロー。\n主な論文\n\nOsumi K, Kujirai T, Ehara H, et al. Structural Basis of Damaged Nucleotide Recognition by Transcribing RNA Polymerase II in the Nucleosome. J Mol Biol 435(13):168130 (2023).\nOsumi K, Sato K, Murano K, Siomi H, Siomi MC. Essential roles of Windei and nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing. EMBO Reports 20(12):e48296 (2019).\nAkatsu M, Ehara H, Kujirai T, et al. (incl. Osumi K). Cryo-EM structures of RNA polymerase II–nucleosome complexes rewrapping transcribed DNA. J Biol Chem 299(12):105477 (2023)."
+  },
+  {
+    "objectID": "ja/about.html#foldarc-のこと",
+    "href": "ja/about.html#foldarc-のこと",
+    "title": "プロフィール",
+    "section": "FoldArc のこと",
+    "text": "FoldArc のこと\nこちらが本業です。FoldArc は de novo タンパク質バインダー──細胞の中で発現させて、 ほかをそのままに、狙ったタンパク質間相互作用ひとつだけを止められる小さなタンパク質──を 設計しています。“De novo protein probes for cell biology”。このブログは、その仕事の もう半分です。"
   },
   {
     "objectID": "ja/index.html",
@@ -40,47 +68,5 @@
     "title": "Ken Osumi",
     "section": "",
     "text": "About · 日本語 · GitHub\n\n\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html#what-i-write-here",
-    "href": "about.html#what-i-write-here",
-    "title": "プロフィール",
-    "section": "What I write here",
-    "text": "What I write here\nI read the internal representations of protein language models — ESMC and its sparse-autoencoder features — and try to turn them into residue-level, falsifiable hypotheses about molecular mechanism. This blog is where I do that in the open: reproductions, methods, and the occasional wrong guess. The bet behind it is simple — a model trained only on sequence has quietly learned a great deal of biology, and most of it is still waiting to be read."
-  },
-  {
-    "objectID": "about.html#background",
-    "href": "about.html#background",
-    "title": "プロフィール",
-    "section": "Background",
-    "text": "Background\nMy training is in structural and chromatin biology. I did my PhD at the University of Tokyo in Hiroshi Kurumizaka’s lab, using cryo-EM to study how RNA polymerase II transcribes through nucleosomes and recognizes damaged nucleotides; before that, in the Siomi lab, I worked on transposon silencing and the regulation of SETDB1. I was a JSPS Research Fellow (DC2) and a University of Tokyo WINGS-LST fellow.\nSelected publications\n\nOsumi K, Kujirai T, Ehara H, et al. Structural Basis of Damaged Nucleotide Recognition by Transcribing RNA Polymerase II in the Nucleosome. J Mol Biol 435(13):168130 (2023).\nOsumi K, Sato K, Murano K, Siomi H, Siomi MC. Essential roles of Windei and nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing. EMBO Reports 20(12):e48296 (2019).\nAkatsu M, Ehara H, Kujirai T, et al. (incl. Osumi K). Cryo-EM structures of RNA polymerase II–nucleosome complexes rewrapping transcribed DNA. J Biol Chem 299(12):105477 (2023)."
-  },
-  {
-    "objectID": "about.html#foldarc",
-    "href": "about.html#foldarc",
-    "title": "プロフィール",
-    "section": "FoldArc",
-    "text": "FoldArc\nThe day job. FoldArc designs de novo protein binders — small proteins you can express inside a cell to switch off a single protein–protein interaction while leaving everything else intact. De novo protein probes for cell biology. This blog is the other half of that work.\n\n\nEnglish · 記事一覧\n大角 健(おおすみ けん)、FoldArc 代表です。"
-  },
-  {
-    "objectID": "about.html#このブログで書いていること",
-    "href": "about.html#このブログで書いていること",
-    "title": "プロフィール",
-    "section": "このブログで書いていること",
-    "text": "このブログで書いていること\nタンパク質言語モデル(ESMC と、そのスパースオートエンコーダ特徴)の内部表現を 読み解き、それを残基レベルで反証可能な分子機構の仮説に落とすことに取り組んでいます。 このブログは、それを公の場でやる場所です──再現と、手法と、時々の見当違い。背景に ある賭けはシンプルで、「配列だけで訓練されたモデルが、実は膨大な生物学を静かに学んで いて、その大半はまだ読まれずに残っている」というものです。"
-  },
-  {
-    "objectID": "about.html#これまで",
-    "href": "about.html#これまで",
-    "title": "プロフィール",
-    "section": "これまで",
-    "text": "これまで\n専門は構造生物学とクロマチン生物学です。東京大学の胡桃坂仁志研究室で博士号を取得し、 クライオ電子顕微鏡を使って、RNA ポリメラーゼ II がヌクレオソームを越えて転写する仕組みや、 損傷ヌクレオチドを認識する機構を研究しました。それ以前は塩見研究室で、トランスポゾンの サイレンシングと SETDB1 の制御を扱っていました。日本学術振興会 特別研究員(DC2)、 東京大学 WINGS-LST フェロー。\n主な論文\n\nOsumi K, Kujirai T, Ehara H, et al. Structural Basis of Damaged Nucleotide Recognition by Transcribing RNA Polymerase II in the Nucleosome. J Mol Biol 435(13):168130 (2023).\nOsumi K, Sato K, Murano K, Siomi H, Siomi MC. Essential roles of Windei and nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing. EMBO Reports 20(12):e48296 (2019).\nAkatsu M, Ehara H, Kujirai T, et al. (incl. Osumi K). Cryo-EM structures of RNA polymerase II–nucleosome complexes rewrapping transcribed DNA. J Biol Chem 299(12):105477 (2023)."
-  },
-  {
-    "objectID": "about.html#foldarc-のこと",
-    "href": "about.html#foldarc-のこと",
-    "title": "プロフィール",
-    "section": "FoldArc のこと",
-    "text": "FoldArc のこと\nこちらが本業です。FoldArc は de novo タンパク質バインダー──細胞の中で発現させて、 ほかをそのままに、狙ったタンパク質間相互作用ひとつだけを止められる小さなタンパク質──を 設計しています。“De novo protein probes for cell biology”。このブログは、その仕事の もう半分です。"
   }
 ]

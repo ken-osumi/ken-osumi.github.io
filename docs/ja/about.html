@@ -143,7 +143,9 @@ document.addEventListener("DOMContentLoaded", function () {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">目次</h2>
   <ul>
-  <li><a href="#主な論文" id="toc-主な論文" class="nav-link active" data-scroll-target="#主な論文">主な論文</a></li>
+  <li><a href="#このブログで書いていること" id="toc-このブログで書いていること" class="nav-link active" data-scroll-target="#このブログで書いていること">このブログで書いていること</a></li>
+  <li><a href="#これまで" id="toc-これまで" class="nav-link" data-scroll-target="#これまで">これまで</a></li>
+  <li><a href="#foldarc-のこと" id="toc-foldarc-のこと" class="nav-link" data-scroll-target="#foldarc-のこと">FoldArc のこと</a></li>
   </ul>
 </nav>
     </div>
@@ -173,16 +175,24 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="about-contents"><main class="content" id="quarto-document-content">
 
 <p><a href="../about.html" data-langpref="en">English</a> · <a href="../ja/index.html">記事一覧</a></p>
-<p><strong>大角 健(おおすみ けん)</strong>。<a href="https://foldarc.com">FoldArc</a> 代表。構造生物学と 機械学習の解釈性の境目で仕事をしています。タンパク質言語モデル(ESMC と、その スパースオートエンコーダ特徴)の内部表現を読み解き、残基レベルで反証可能な 分子機構の仮説に落とすことに取り組んでいます。</p>
-<p>専門は構造生物学とクロマチン生物学です。東京大学の胡桃坂仁志研究室で博士号を 取得し、クライオ電子顕微鏡を使って、RNA ポリメラーゼ II がヌクレオソームを 越えて転写する仕組みや、損傷ヌクレオチドを認識する機構を研究しました。それ以前は 塩見研究室で、トランスポゾンのサイレンシングと SETDB1 の制御を扱っていました。 日本学術振興会 特別研究員(DC2)、東京大学 WINGS-LST フェロー。</p>
-<p>FoldArc では、エピジェネティクス・クロマチン制御に関わる標的に対する de novo タンパク質バインダー設計の AI パイプラインを開発しています。このブログはその 仕事のもう半分——タンパク質言語モデルが実際のところ何を学んだのかを、一つずつ 再現しながら公の場で考える場所です。</p>
-<section id="主な論文" class="level2">
-<h2 data-anchor-id="主な論文">主な論文</h2>
+<p><strong>大角 健(おおすみ けん)</strong>、<a href="https://foldarc.com">FoldArc</a> 代表です。</p>
+<section id="このブログで書いていること" class="level2">
+<h2 data-anchor-id="このブログで書いていること">このブログで書いていること</h2>
+<p>タンパク質言語モデル(ESMC と、そのスパースオートエンコーダ特徴)の内部表現を 読み解き、それを残基レベルで反証可能な分子機構の仮説に落とすことに取り組んでいます。 このブログは、それを公の場でやる場所です──再現と、手法と、時々の見当違い。背景に ある賭けはシンプルで、「配列だけで訓練されたモデルが、実は膨大な生物学を静かに学んで いて、その大半はまだ読まれずに残っている」というものです。</p>
+</section>
+<section id="これまで" class="level2">
+<h2 data-anchor-id="これまで">これまで</h2>
+<p>専門は構造生物学とクロマチン生物学です。東京大学の胡桃坂仁志研究室で博士号を取得し、 クライオ電子顕微鏡を使って、RNA ポリメラーゼ II がヌクレオソームを越えて転写する仕組みや、 損傷ヌクレオチドを認識する機構を研究しました。それ以前は塩見研究室で、トランスポゾンの サイレンシングと SETDB1 の制御を扱っていました。日本学術振興会 特別研究員(DC2)、 東京大学 WINGS-LST フェロー。</p>
+<p><strong>主な論文</strong></p>
 <ul>
 <li><strong>Osumi K</strong>, Kujirai T, Ehara H, et al.&nbsp;<em>Structural Basis of Damaged Nucleotide Recognition by Transcribing RNA Polymerase II in the Nucleosome.</em> J Mol Biol 435(13):168130 (2023).</li>
 <li><strong>Osumi K</strong>, Sato K, Murano K, Siomi H, Siomi MC. <em>Essential roles of Windei and nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing.</em> EMBO Reports 20(12):e48296 (2019).</li>
 <li>Akatsu M, Ehara H, Kujirai T, et al.&nbsp;(incl.&nbsp;<strong>Osumi K</strong>). <em>Cryo-EM structures of RNA polymerase II–nucleosome complexes rewrapping transcribed DNA.</em> J Biol Chem 299(12):105477 (2023).</li>
 </ul>
+</section>
+<section id="foldarc-のこと" class="level2">
+<h2 data-anchor-id="foldarc-のこと">FoldArc のこと</h2>
+<p>こちらが本業です。FoldArc は de novo タンパク質バインダー──細胞の中で発現させて、 ほかをそのままに、狙ったタンパク質間相互作用ひとつだけを止められる小さなタンパク質──を 設計しています。“De novo protein probes for cell biology”。このブログは、その仕事の もう半分です。</p>
 
 
 </section>
