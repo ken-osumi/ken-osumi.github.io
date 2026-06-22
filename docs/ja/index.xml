@@ -10,6 +10,113 @@
 <atom:link href="https://kenosumi.com/ja/index.xml" rel="self" type="application/rss+xml"/>
 <description>Reading the internal representations of protein language models to generate residue-level mechanistic hypotheses.</description>
 <generator>quarto-1.9.38</generator>
-<lastBuildDate>Mon, 22 Jun 2026 07:45:02 GMT</lastBuildDate>
+<lastBuildDate>Sun, 21 Jun 2026 15:00:00 GMT</lastBuildDate>
+<item>
+  <title>ESMC の SAE 図を一人で再現したら、repo の取り違えで半日溶かした話</title>
+  <dc:creator>Ken Osumi</dc:creator>
+  <link>https://kenosumi.com/ja/posts/reproducing-esmc-sae/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="この記事で分かること" class="level2">
+<h2 class="anchored" data-anchor-id="この記事で分かること">この記事で分かること</h2>
+<p>ESMC の SAE 特徴を自分で再現してみたい人向けに、つまずきポイントと、その先にあったものを書いておきます。読み終わると、こんなことが分かるはずです。</p>
+<ul>
+<li>よく似た名前の SAE が2つあって、README のまま進むと取り違えること(しかも気づきにくい)</li>
+<li>「数値がおかしい」と思ったとき、何を先に疑うべきか</li>
+<li>配列しか見ていないモデルが、3D で近い残基をまとめて1つの特徴にしていた、という再現結果</li>
+</ul>
+<p>その前に一言。これを資金も大きなチームもない一人でやれるのは、EvolutionaryScale と Chan Zuckerberg Biohub が ESMC の重み・SAE・ESM Atlas・アノテーション、訓練の副産物まで全部オープンにしてくれているからです。素直にありがたいです。</p>
+</section>
+<section id="sae-が2つあるという話" class="level2">
+<h2 class="anchored" data-anchor-id="sae-が2つあるという話">SAE が2つある、という話</h2>
+<p>ESMC の SAE には、名前のよく似た版が2つあります。</p>
+<ul>
+<li>正解：<code>biohub/ESMC-6B-sae-layer60-k64-codebook16384</code>。論文と Atlas が使っていて、正規化統計があるのはこれだけ。</li>
+<li>取り違え：<code>biohub/ESMC-6B-sae-k64-codebook16384</code>(全層パック版)。</li>
+</ul>
+<p>で、esm リポジトリの README のサンプルコードは、後者を使っています。最初に目に入るコードがこっちなんですね。</p>
+<p>ただ、これは罠というより副産物だと思います。リポジトリを grep すると、全層版は README の1箇所だけ。tutorial にも論文にも使われていません。実際のチュートリアルはちゃんと <code>-layer60-</code> を使っている。たぶん、どの層が一番きれいに分解できるか比べるために各層の SAE を訓練して、layer60(深さ75%くらい)を選んだ。その副産物を捨てずに公開してくれた、というだけの話です。</p>
+</section>
+<section id="ほとんど合ってるが一番やっかい" class="level2">
+<h2 class="anchored" data-anchor-id="ほとんど合ってるが一番やっかい">「ほとんど合ってる」が一番やっかい</h2>
+<p>取り違えで一番やっかいなのは、2つの SAE が feature の index を共有していることです。</p>
+<p>だいたいの特徴は、どっちを使っても一致します。F278 は K275(P-loop)で一致、F4787 は A296 で一致。値がそろうので「合ってる」と思ってしまう。でも一部だけ別物になっていました。</p>
+<ul>
+<li>F10351：I453 で本来 1.28 のはずが 0</li>
+<li>F8957：H242 で本来 1.68 のはずが 0</li>
+<li>F1635：ピークが G409 のはずが G2</li>
+</ul>
+<p>全部壊れていれば気づきます。やっかいなのは、大半が合っていて1つだけ壊れているとき。これが一番見つけにくい。</p>
+</section>
+<section id="つの仮説を立てて全部外した" class="level2">
+<h2 class="anchored" data-anchor-id="つの仮説を立てて全部外した">4つの仮説を立てて、全部外した</h2>
+<p>ここは正直な失敗談です。F10351 が光らない。この1点に、それっぽい仮説を4つ立てて、順番に潰しました。</p>
+<ol type="1">
+<li>弱い特徴が Top-K=64 から漏れた? → API の raw が 1.28。弱くない。外れ。</li>
+<li>正規化のせい? → API の raw と local の raw がそもそも違う。外れ。</li>
+<li>融合カーネルが無くて残差ストリームがズレた? → xformers 入れて、fp32 にして、transformer_engine を再ビルドしかけて、全部不発。外れ。</li>
+<li>Top-K の順位境界で flip した? → local の前活性は 0.39(必要 1.26、297位)。外れ。</li>
+</ol>
+<p>全部外れ。原因は SAE repo の取り違え、1行です。3番でやった kernel 周りの作業は、まるごと無駄でした。</p>
+<p>正直、途中で薄々「story を作りすぎてるな」とは思っていました。浮動小数点とかカーネルとか、奥の方に原因がある筋書きはきれいで、それっぽい。でも、きれいに説明がつくことと本当の原因は別です。</p>
+</section>
+<section id="抜けたきっかけは問いを2つ立て直しただけ" class="level2">
+<h2 class="anchored" data-anchor-id="抜けたきっかけは問いを2つ立て直しただけ">抜けたきっかけは、問いを2つ立て直しただけ</h2>
+<p>抜け出せたのは新しい実験のおかげじゃなくて、問いを戻したからでした。</p>
+<p>1つ目。「公式はこの SAE 解析をどう回してる? repo とノートブック、ちゃんと見たか?」 見たら、実チュートリアルが <code>-layer60-</code> を使っているのが分かった。</p>
+<p>2つ目。「API が返してる重みは、本当に論文と同じ?」 調べたら、モデルも2系統ありました。<code>biohub/ESMC-6B</code>(2026-05、論文)と、API が今も返す <code>esmc-6b-2024-12</code>(2025-12 の旧版)。API を正解だと思い込むと、ズレてるのは自分の方だ、という逆の前提にハマる。実際ハマっていました。</p>
+<p>教訓はシンプルです。大半が合っていて1つだけぴったり壊れているときは、浮動小数点の奥を掘る前に「別の artifact・別の版・別 repo を見てないか」を先に疑う。切り分ける前に、それっぽい機構の story を作らない。</p>
+</section>
+<section id="うまくいった先にあったもの" class="level2">
+<h2 class="anchored" data-anchor-id="うまくいった先にあったもの">うまくいった先にあったもの</h2>
+<p>正しい layer60 の SAE に替えたら、F10351 はちゃんと再現できました。で、間違った SAE が消していたこの特徴が、結果的に一番おもしろい特徴でした。</p>
+<p>Src キナーゼドメイン(270–519)の全変異 4,750 をスキャンします。F10351 を完全に壊す(感受性 <img src="https://latex.codecogs.com/png.latex?s=-1.0">)変異は、配列の上ではばらばらに離れています。論文は「最大79残基離れ・median Cα 11Å」と書いている。私のスキャンでは最大104残基離れた変異まで壊していて、論文の例 A374(配列79残基・3D 12.8Å)とも一致しました。壊れる位置の 3D 距離の中央値は約11Å。</p>
+<p>要するに、配列しか見ていないモデルが、3D で近くにあって一緒に働く残基のまとまりを、1つの特徴として捉えていた、ということです。配列上は遠いのに、畳まれた構造の中では寄り集まっている残基たち。それを特徴がそのまま拾っていた。間違った SAE だと、これがまるごと消えていたわけです。うまく拾えてよかった、というのが正直なところです。</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ノート
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>校正の注釈。F278 の within-position 変異感受性は、実測キナーゼ活性(Ahler 2019 DMS、ProteinGym <code>SRC_HUMAN_Ahler_2019</code>)と Spearman <img src="https://latex.codecogs.com/png.latex?%5Crho=0.692"> でした。論文の代表値 <img src="https://latex.codecogs.com/png.latex?%5Crho%5Capprox0.74"> は108特徴のリッジ回帰、私の 0.692 は単一特徴・within-position の相関で、測り方が違います。再現したのは図の「振る舞い」で、統計値そのものではありません。</p>
+</div>
+</div>
+</section>
+<section id="再現メモ" class="level2">
+<h2 class="anchored" data-anchor-id="再現メモ">再現メモ</h2>
+<ul>
+<li>モデル：<code>biohub/ESMC-6B</code>(2026-05-19)の layer60。SAE：<code>biohub/ESMC-6B-sae-layer60-k64-codebook16384</code>(2026-05-26)。bf16、Top-K=64。</li>
+<li>計算：Modal の H100。ESMC の重みと esm パッケージ・CUDA を焼き込んだ既存の Modal イメージを再利用して、SAE の重みだけ起動時に取得。</li>
+<li>データ：<code>SRC_HUMAN_Ahler_2019</code>(ProteinGym)。3D 距離は AlphaFold <code>AF-P12931-F1</code>。</li>
+<li>API はスキャンには向きません(1コール 100〜500秒、並列で接続が落ちる、失敗コールも課金)。ローカル GPU なら 4,750 変異が数分。</li>
+</ul>
+<blockquote class="blockquote">
+<p>再現用のコードとデータは近日公開します。公開リポジトリと <code>modal run</code> で自分の GPU から全図を再現できるようにし、GPU を持っていない人向けには、事前計算済みの特徴活性から図を再現できる軽量版も用意する予定です。</p>
+</blockquote>
+</section>
+<section id="おわりに" class="level2">
+<h2 class="anchored" data-anchor-id="おわりに">おわりに</h2>
+<p>一番ハマった特徴と、一番おもしろかった特徴が、同じ F10351 だった、という話でした。1つだけ静かに壊れていた特徴が、抜けてみれば一番拾う価値のあるものだった。</p>
+<p>これを一人で確かめられたのは、重みも SAE も副産物まで全部オープンにしてくれているからです。あらためて、EvolutionaryScale と Chan Zuckerberg Biohub に感謝します。</p>
+
+
+<!-- -->
+
+</section>
+
+ ]]></description>
+  <category>reproduction</category>
+  <category>esmc</category>
+  <category>interpretability</category>
+  <guid>https://kenosumi.com/ja/posts/reproducing-esmc-sae/</guid>
+  <pubDate>Sun, 21 Jun 2026 15:00:00 GMT</pubDate>
+</item>
 </channel>
 </rss>

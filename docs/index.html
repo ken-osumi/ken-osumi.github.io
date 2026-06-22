@@ -83,7 +83,7 @@ ul.task-list li input[type="checkbox"] {
     const options = {
       valueNames: ['listing-date','listing-title','listing-reading-time','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-categories"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -202,7 +202,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(0)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZXNtYw==">esmc <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aW50ZXJwcmV0YWJpbGl0eQ==">interpretability <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cmVwcm9kdWN0aW9u">reproduction <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content column-page-left" id="quarto-document-content">
 
@@ -233,7 +233,24 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-
+<div class="quarto-post image-right" data-index="0" data-categories="cmVwcm9kdWN0aW9uJTJDZXNtYyUyQ2ludGVycHJldGFiaWxpdHk=" data-listing-date-sort="1782054000000" data-listing-file-modified-sort="1782116701005" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="205">
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./ja/posts/reproducing-esmc-sae/index.html" class="no-external">ESMC の SAE 図を一人で再現したら、repo の取り違えで半日溶かした話</a>
+</h3>
+<div class="delink listing-description"><a href="./ja/posts/reproducing-esmc-sae/index.html" class="no-external">
+<p>ESMC 論文の Figure S33 を一人で再現した記録。よく似た名前の SAE を取り違えて半日ハマり、抜けた先で一番おもしろい特徴に行き着くまで。</p>
+</a></div>
+</div>
+<div class="metadata">
+<a href="./ja/posts/reproducing-esmc-sae/index.html" class="no-external">
+<div class="listing-date">
+Jun 22, 2026
+</div>
+<div class="listing-reading-time">2 min</div>
+</a>
+</div>
+</div>
 </div>
 <div class="listing-no-matching d-none">No matching items</div>
 </div></main> <!-- /main -->
