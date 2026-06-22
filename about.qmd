@@ -15,11 +15,18 @@ about:
 
 [日本語](ja/about.qmd){data-langpref="ja"} · [Writing](index.qmd)
 
-I'm **Ken Osumi** (大角 健), founder of [FoldArc](https://foldarc.com). I work at
-the seam between structural biology and machine interpretability: reading the
-internal representations of protein language models — ESMC and its
-sparse-autoencoder features — and turning them into residue-level, falsifiable
-hypotheses about molecular mechanism.
+I'm **Ken Osumi** (大角 健), founder of [FoldArc](https://foldarc.com).
+
+## What I write here
+
+I read the internal representations of protein language models — ESMC and its
+sparse-autoencoder features — and try to turn them into residue-level,
+falsifiable hypotheses about molecular mechanism. This blog is where I do that in
+the open: reproductions, methods, and the occasional wrong guess. The bet behind
+it is simple — a model trained only on sequence has quietly learned a great deal
+of biology, and most of it is still waiting to be read.
+
+## Background
 
 My training is in structural and chromatin biology. I did my PhD at the
 University of Tokyo in Hiroshi Kurumizaka's lab, using cryo-EM to study how RNA
@@ -28,12 +35,7 @@ nucleotides; before that, in the Siomi lab, I worked on transposon silencing and
 the regulation of SETDB1. I was a JSPS Research Fellow (DC2) and a University of
 Tokyo WINGS-LST fellow.
 
-At FoldArc I build AI pipelines for de novo protein binder design, aimed at
-epigenetic and chromatin-regulatory targets. This blog is the other half of that
-work — thinking in public about what protein language models have actually
-learned, one reproduction at a time.
-
-## Selected publications
+**Selected publications**
 
 - **Osumi K**, Kujirai T, Ehara H, et al. *Structural Basis of Damaged Nucleotide
   Recognition by Transcribing RNA Polymerase II in the Nucleosome.* J Mol Biol
@@ -44,3 +46,10 @@ learned, one reproduction at a time.
 - Akatsu M, Ehara H, Kujirai T, et al. (incl. **Osumi K**). *Cryo-EM structures of
   RNA polymerase II–nucleosome complexes rewrapping transcribed DNA.* J Biol Chem
   299(12):105477 (2023).
+
+## FoldArc
+
+The day job. FoldArc designs *de novo* protein binders — small proteins you can
+express inside a cell to switch off a single protein–protein interaction while
+leaving everything else intact. *De novo protein probes for cell biology.* This
+blog is the other half of that work.
