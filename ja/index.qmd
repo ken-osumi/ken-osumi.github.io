@@ -1,6 +1,6 @@
 ---
 title: "Ken Osumi"
-subtitle: "Reading the internal representations of protein language models to generate residue-level mechanistic hypotheses."
+subtitle: "タンパク質言語モデルの内部表現を読み、残基レベルの分子機構仮説を立てる。"
 listing:
   contents: posts
   sort: "date desc"
@@ -14,4 +14,4 @@ page-layout: full
 title-block-banner: false
 ---
 
-[About](about.qmd) · [日本語](ja/index.qmd){data-langpref="ja"} · [GitHub](https://github.com/ken-osumi)
+[プロフィール](about.qmd) · [English](../index.qmd){data-langpref="en"} · [GitHub](https://github.com/ken-osumi)

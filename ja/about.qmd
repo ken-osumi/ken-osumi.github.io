@@ -1,0 +1,44 @@
+---
+title: "プロフィール"
+about:
+  template: solana
+  links:
+    - icon: github
+      text: GitHub
+      href: https://github.com/ken-osumi
+    - icon: envelope
+      text: Email
+      href: mailto:ken@foldarc.com
+    - text: ORCID
+      href: https://orcid.org/0000-0002-3846-8747
+---
+
+[English](../about.qmd){data-langpref="en"} · [記事一覧](index.qmd)
+
+**大角 健(おおすみ けん)**。[FoldArc](https://foldarc.com) 代表。構造生物学と
+機械学習の解釈性の境目で仕事をしています。タンパク質言語モデル(ESMC と、その
+スパースオートエンコーダ特徴)の内部表現を読み解き、残基レベルで反証可能な
+分子機構の仮説に落とすことに取り組んでいます。
+
+専門は構造生物学とクロマチン生物学です。東京大学の胡桃坂仁志研究室で博士号を
+取得し、クライオ電子顕微鏡を使って、RNA ポリメラーゼ II がヌクレオソームを
+越えて転写する仕組みや、損傷ヌクレオチドを認識する機構を研究しました。それ以前は
+塩見研究室で、トランスポゾンのサイレンシングと SETDB1 の制御を扱っていました。
+日本学術振興会 特別研究員(DC2)、東京大学 WINGS-LST フェロー。
+
+FoldArc では、エピジェネティクス・クロマチン制御に関わる標的に対する de novo
+タンパク質バインダー設計の AI パイプラインを開発しています。このブログはその
+仕事のもう半分——タンパク質言語モデルが実際のところ何を学んだのかを、一つずつ
+再現しながら公の場で考える場所です。
+
+## 主な論文
+
+- **Osumi K**, Kujirai T, Ehara H, et al. *Structural Basis of Damaged Nucleotide
+  Recognition by Transcribing RNA Polymerase II in the Nucleosome.* J Mol Biol
+  435(13):168130 (2023).
+- **Osumi K**, Sato K, Murano K, Siomi H, Siomi MC. *Essential roles of Windei and
+  nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing.* EMBO
+  Reports 20(12):e48296 (2019).
+- Akatsu M, Ehara H, Kujirai T, et al. (incl. **Osumi K**). *Cryo-EM structures of
+  RNA polymerase II–nucleosome complexes rewrapping transcribed DNA.* J Biol Chem
+  299(12):105477 (2023).

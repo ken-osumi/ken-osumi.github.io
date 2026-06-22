@@ -6,14 +6,41 @@ about:
     - icon: github
       text: GitHub
       href: https://github.com/ken-osumi
+    - icon: envelope
+      text: Email
+      href: mailto:ken@foldarc.com
+    - text: ORCID
+      href: https://orcid.org/0000-0002-3846-8747
 ---
 
-<!-- Placeholder — replace with your own bio before sharing the URL. -->
+[日本語](ja/about.qmd){data-langpref="ja"} · [Writing](index.qmd)
 
-I am Ken Osumi. I work on reading the internal representations of protein
-language models (ESMC and its sparse autoencoder features) and turning them
-into residue-level, falsifiable mechanistic hypotheses and the experiments
-that would test them.
+I'm **Ken Osumi** (大角 健), founder of [FoldArc](https://foldarc.com). I work at
+the seam between structural biology and machine interpretability: reading the
+internal representations of protein language models — ESMC and its
+sparse-autoencoder features — and turning them into residue-level, falsifiable
+hypotheses about molecular mechanism.
 
-This site is where I think in public: reproductions, methods, and the
-occasional wrong guess.
+My training is in structural and chromatin biology. I did my PhD at the
+University of Tokyo in Hiroshi Kurumizaka's lab, using cryo-EM to study how RNA
+polymerase II transcribes through nucleosomes and recognizes damaged
+nucleotides; before that, in the Siomi lab, I worked on transposon silencing and
+the regulation of SETDB1. I was a JSPS Research Fellow (DC2) and a University of
+Tokyo WINGS-LST fellow.
+
+At FoldArc I build AI pipelines for de novo protein binder design, aimed at
+epigenetic and chromatin-regulatory targets. This blog is the other half of that
+work — thinking in public about what protein language models have actually
+learned, one reproduction at a time.
+
+## Selected publications
+
+- **Osumi K**, Kujirai T, Ehara H, et al. *Structural Basis of Damaged Nucleotide
+  Recognition by Transcribing RNA Polymerase II in the Nucleosome.* J Mol Biol
+  435(13):168130 (2023).
+- **Osumi K**, Sato K, Murano K, Siomi H, Siomi MC. *Essential roles of Windei and
+  nuclear monoubiquitination of Eggless/SETDB1 in transposon silencing.* EMBO
+  Reports 20(12):e48296 (2019).
+- Akatsu M, Ehara H, Kujirai T, et al. (incl. **Osumi K**). *Cryo-EM structures of
+  RNA polymerase II–nucleosome complexes rewrapping transcribed DNA.* J Biol Chem
+  299(12):105477 (2023).

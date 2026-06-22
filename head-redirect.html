@@ -1,0 +1,25 @@
+<script>
+// Browser-language auto-switch (GitHub Pages is static, so this is client-side).
+// Only redirects from the English home, and only until the visitor makes a manual choice.
+(function () {
+  try {
+    var p = window.location.pathname;
+    var atEnRoot = (p === "/" || p === "/index.html" || p === "");
+    if (!atEnRoot) return;
+    if (localStorage.getItem("langPref")) return;   // respect a manual choice
+    var lang = (navigator.language || navigator.userLanguage || "").toLowerCase();
+    if (lang.indexOf("ja") === 0) {
+      localStorage.setItem("langPref", "ja");
+      window.location.replace("/ja/");
+    }
+  } catch (e) {}
+})();
+// Remember the visitor's manual language choice when they use the toggle.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('a[data-langpref]').forEach(function (a) {
+    a.addEventListener("click", function () {
+      try { localStorage.setItem("langPref", a.getAttribute("data-langpref")); } catch (e) {}
+    });
+  });
+});
+</script>

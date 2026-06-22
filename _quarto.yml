@@ -11,10 +11,10 @@ website:
   navbar:
     pinned: true
     right:
-      - text: Writing
+      - text: "日本語"
+        href: ja/index.qmd
+      - text: "English"
         href: index.qmd
-      - text: About
-        href: about.qmd
       - icon: github
         href: https://github.com/ken-osumi
   page-footer:
@@ -29,3 +29,4 @@ format:
     code-copy: true
     code-overflow: wrap
     highlight-style: github
+    include-in-header: head-redirect.html

@@ -100,6 +100,31 @@ ul.task-list li input[type="checkbox"] {
     }
   })
   </script>
+<script>
+// Browser-language auto-switch (GitHub Pages is static, so this is client-side).
+// Only redirects from the English home, and only until the visitor makes a manual choice.
+(function () {
+  try {
+    var p = window.location.pathname;
+    var atEnRoot = (p === "/" || p === "/index.html" || p === "");
+    if (!atEnRoot) return;
+    if (localStorage.getItem("langPref")) return;   // respect a manual choice
+    var lang = (navigator.language || navigator.userLanguage || "").toLowerCase();
+    if (lang.indexOf("ja") === 0) {
+      localStorage.setItem("langPref", "ja");
+      window.location.replace("/ja/");
+    }
+  } catch (e) {}
+})();
+// Remember the visitor's manual language choice when they use the toggle.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('a[data-langpref]').forEach(function (a) {
+    a.addEventListener("click", function () {
+      try { localStorage.setItem("langPref", a.getAttribute("data-langpref")); } catch (e) {}
+    });
+  });
+});
+</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -152,12 +177,12 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
-<span class="menu-text">Writing</span></a>
+    <a class="nav-link" href="./ja/index.html"> 
+<span class="menu-text">日本語</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
-<span class="menu-text">About</span></a>
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">English</span></a>
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/ken-osumi"> <i class="bi bi-github" role="img">
@@ -201,6 +226,7 @@ window.Quarto = {
 </header>
 
 
+<p><a href="./about.html">About</a> · <a href="./ja/index.html" data-langpref="ja">日本語</a> · <a href="https://github.com/ken-osumi">GitHub</a></p>
 
 
 
