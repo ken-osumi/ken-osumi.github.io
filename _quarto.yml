@@ -1,0 +1,31 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - CNAME
+
+website:
+  title: "Ken Osumi"
+  description: "Reading the internal representations of protein language models to generate residue-level mechanistic hypotheses."
+  site-url: "https://kenosumi.com"
+  navbar:
+    pinned: true
+    right:
+      - text: Writing
+        href: index.qmd
+      - text: About
+        href: about.qmd
+      - icon: github
+        href: https://github.com/ken-osumi
+  page-footer:
+    center: "© 2026 Ken Osumi"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    highlight-style: github

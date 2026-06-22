@@ -1,0 +1,11 @@
+/.quarto/
+.DS_Store
+*.html.bak
+
+# Private, never published or pushed. `_` prefix also makes Quarto ignore them.
+/_VOICE.md
+/_drafts/
+
+# Build output (docs/) IS committed — GitHub Pages serves it from main /docs.
+
+**/*.quarto_ipynb

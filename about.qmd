@@ -1,0 +1,19 @@
+---
+title: "About"
+about:
+  template: solana
+  links:
+    - icon: github
+      text: GitHub
+      href: https://github.com/ken-osumi
+---
+
+<!-- Placeholder — replace with your own bio before sharing the URL. -->
+
+I am Ken Osumi. I work on reading the internal representations of protein
+language models (ESMC and its sparse autoencoder features) and turning them
+into residue-level, falsifiable mechanistic hypotheses and the experiments
+that would test them.
+
+This site is where I think in public: reproductions, methods, and the
+occasional wrong guess.

@@ -1,0 +1,17 @@
+/* Minimal overrides. Ship ugly; refine later. */
+
+.quarto-title-block .subtitle {
+  font-size: 1.05rem;
+  color: var(--bs-secondary-color);
+  font-weight: 400;
+}
+
+/* readable measure for prose */
+main.content {
+  max-width: 46rem;
+}
+
+/* code blocks a touch calmer */
+pre.sourceCode {
+  font-size: 0.85rem;
+}

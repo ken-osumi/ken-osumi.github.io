@@ -1,0 +1,9 @@
+# Defaults applied to every post
+freeze: false
+title-block-banner: false
+toc: true
+code-tools: true
+
+# Reader reproduction footer convention:
+# heavy layer  -> link to a public repo + optional `modal run repro.py`
+# light layer  -> link to precomputed artifacts (HF Datasets / Zenodo) + a CPU script
