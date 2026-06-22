@@ -12,6 +12,113 @@
 <generator>quarto-1.9.38</generator>
 <lastBuildDate>Sun, 21 Jun 2026 15:00:00 GMT</lastBuildDate>
 <item>
+  <title>Reproducing ESMC’s SAE features: I lost half a day to one wrong repo</title>
+  <dc:creator>Ken Osumi</dc:creator>
+  <link>https://kenosumi.com/posts/reproducing-esmc-sae/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="what-youll-get-from-this" class="level2">
+<h2 class="anchored" data-anchor-id="what-youll-get-from-this">What you’ll get from this</h2>
+<p>If you want to reproduce ESMC’s SAE features yourself, here are the snags and what was on the other side of them. By the end you’ll know:</p>
+<ul>
+<li>there are two similarly-named SAEs, and following the README quietly lands you on the wrong one (and it’s hard to notice);</li>
+<li>what to suspect first when the numbers look off;</li>
+<li>the reproduction result itself — a model that only saw sequence had bundled residues that are close in 3D into a single feature.</li>
+</ul>
+<p>One aside first. The only reason I can do this solo, with no funding and no big team, is that EvolutionaryScale and the Chan Zuckerberg Biohub put all of ESMC in the open: the weights, the SAEs, the ESM Atlas, the annotations, even training byproducts. Honestly, I’m just grateful for it.</p>
+</section>
+<section id="two-saes-with-almost-the-same-name" class="level2">
+<h2 class="anchored" data-anchor-id="two-saes-with-almost-the-same-name">Two SAEs with almost the same name</h2>
+<p>ESMC has two SAEs whose names look almost identical:</p>
+<ul>
+<li>the right one: <code>biohub/ESMC-6B-sae-layer60-k64-codebook16384</code>. The paper and the ESM Atlas use it, and it’s the only one that ships normalization stats.</li>
+<li>the mix-up: <code>biohub/ESMC-6B-sae-k64-codebook16384</code> (an all-layer pack).</li>
+</ul>
+<p>And the sample code in the esm README uses the second one. It’s just the first code you see.</p>
+<p>It’s not really a trap, though — more like a byproduct. Grep the repo and the all-layer pack shows up in exactly one place: that README snippet. No tutorial, no script, not the paper. The actual feature tutorial uses <code>-layer60-</code>. My guess for why the all-layer pack exists at all: you need per-layer SAEs to work out which layer separates cleanest, and layer 60 (about 75% of the way up) won. They shipped the byproducts instead of throwing them out. It’s just them being generous.</p>
+</section>
+<section id="almost-everything-matches-is-the-dangerous-part" class="level2">
+<h2 class="anchored" data-anchor-id="almost-everything-matches-is-the-dangerous-part">“Almost everything matches” is the dangerous part</h2>
+<p>The annoying thing about the mix-up is that the two SAEs share feature indices.</p>
+<p>Most features match either way. F278 lines up at K275 (the P-loop), F4787 at A296. The values agree, so you assume you’re set up right. But a few were quietly different:</p>
+<ul>
+<li>F10351: should be 1.28 at I453, came out 0.</li>
+<li>F8957: should be 1.68 at H242, came out 0.</li>
+<li>F1635: peak should be at G409, showed up at G2.</li>
+</ul>
+<p>If everything broke, you’d notice. The trouble is when most of it matches and one thing is off. That’s the hardest case to catch.</p>
+</section>
+<section id="four-reasonable-hypotheses-all-wrong" class="level2">
+<h2 class="anchored" data-anchor-id="four-reasonable-hypotheses-all-wrong">Four reasonable hypotheses, all wrong</h2>
+<p>Here’s the honest part. F10351 wouldn’t light up. I built four plausible hypotheses around that one point and knocked them down one by one:</p>
+<ol type="1">
+<li>A weak feature dropping out of the Top-K=64? The API raw was 1.28. Not weak. No.</li>
+<li>A normalization thing? The API raw and the local raw already disagreed. No.</li>
+<li>Missing fused kernels drifting the residual stream? I added xformers, forced fp32, got as far as trying to rebuild <code>transformer_engine</code> — nothing. No.</li>
+<li>A Top-K rank-boundary flip? Local pre-activation was 0.39 (needed 1.26, rank 297). No.</li>
+</ol>
+<p>All wrong. The cause was the SAE repo mix-up — one line. Everything I did around the kernels was wasted.</p>
+<p>Honestly, partway through I could feel I was over-building a story. Floating point, kernels — a cause hidden deep down is a clean, technical-sounding explanation. But “explains cleanly” and “is actually the cause” are two different things.</p>
+</section>
+<section id="what-got-me-out-re-asking-two-questions" class="level2">
+<h2 class="anchored" data-anchor-id="what-got-me-out-re-asking-two-questions">What got me out: re-asking two questions</h2>
+<p>What got me out wasn’t a new experiment. I just backed up and re-asked two questions.</p>
+<p>First: how does the official side actually run this SAE analysis — did I really look at the repo and the notebook? When I did, I found the real tutorial uses <code>-layer60-</code>.</p>
+<p>Second: is the weight the API serves actually the paper’s model? It turned out there were two model checkpoints too — <code>biohub/ESMC-6B</code> (2026-05, the paper) and <code>esmc-6b-2024-12</code> (the 2025-12 version the API still serves). Treat the API as ground truth and you’ll decide you’re the one who’s off. I did, for a while.</p>
+<p>The lesson is simple. When most things match and one is exactly broken, check whether you’re looking at a different artifact, version, or repo before you dig into floating point. Don’t build a tidy mechanism story before you’ve isolated the cause.</p>
+</section>
+<section id="what-was-on-the-other-side" class="level2">
+<h2 class="anchored" data-anchor-id="what-was-on-the-other-side">What was on the other side</h2>
+<p>Once I swapped in the right layer-60 SAE, F10351 reproduced fine. And the feature the wrong SAE had been hiding turned out to be the most interesting one.</p>
+<p>I scanned all 4,750 mutations across the Src kinase domain (270–519). The mutations that fully break F10351 (sensitivity <img src="https://latex.codecogs.com/png.latex?s%20=%20-1.0">) are scattered far apart in sequence. The paper reports up to 79 residues away, median Cα 11 Å. My scan had mutations as far as 104 residues away still breaking it, and A374 (79 residues away in sequence, 12.8 Å in 3D) matched the paper’s example. The median 3D distance of the breaking positions is about 11 Å.</p>
+<p>So: a model that only ever saw sequence had grouped residues that sit close together in 3D, and work together, into a single feature. Far apart on the chain, but folded up next to each other — and the feature just picked that up. With the wrong SAE, the whole thing was gone. Glad I caught it.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>One honest note on the number. F278’s within-position mutational sensitivity correlates with measured kinase activity (Ahler 2019 DMS, ProteinGym <code>SRC_HUMAN_Ahler_2019</code>) at Spearman <img src="https://latex.codecogs.com/png.latex?%5Crho%20=%200.692">. The paper’s headline <img src="https://latex.codecogs.com/png.latex?%5Crho%20%5Capprox%200.74"> is a 108-feature ridge fit; mine is a single-feature, within-position correlation. Different measurement — I reproduced the figure’s behavior, not the exact statistic.</p>
+</div>
+</div>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<ul>
+<li>Model: <code>biohub/ESMC-6B</code> (2026-05-19), layer 60. SAE: <code>biohub/ESMC-6B-sae-layer60-k64-codebook16384</code> (2026-05-26), bf16, Top-K = 64.</li>
+<li>Compute: one H100 on Modal. I reused an existing Modal image with the ESMC weights, the esm package, and CUDA baked in, and only pulled the SAE weights at startup.</li>
+<li>Data: <code>SRC_HUMAN_Ahler_2019</code> (ProteinGym). 3D distances from AlphaFold <code>AF-P12931-F1</code>.</li>
+<li>The API isn’t built for scans (100–500 s per call, drops under parallelism, bills failed calls). A local GPU runs 4,750 mutations in minutes.</li>
+</ul>
+<blockquote class="blockquote">
+<p>Reproduction code and data are coming soon: a public repo with <code>modal run</code> to regenerate every figure on your own GPU, plus precomputed feature activations so you can reproduce the plots without a GPU.</p>
+</blockquote>
+</section>
+<section id="wrapping-up" class="level2">
+<h2 class="anchored" data-anchor-id="wrapping-up">Wrapping up</h2>
+<p>The feature that cost me the most time and the feature I found most interesting were the same one — F10351. The one thing that was quietly broken turned out to be the one worth having.</p>
+<p>I could only check this solo because the weights, the SAEs, and even the byproducts are all out in the open. Thanks again to EvolutionaryScale and the Chan Zuckerberg Biohub.</p>
+
+
+<!-- -->
+
+</section>
+
+ ]]></description>
+  <category>reproduction</category>
+  <category>esmc</category>
+  <category>interpretability</category>
+  <guid>https://kenosumi.com/posts/reproducing-esmc-sae/</guid>
+  <pubDate>Sun, 21 Jun 2026 15:00:00 GMT</pubDate>
+</item>
+<item>
   <title>ESMC の SAE 図を一人で再現したら、repo の取り違えで半日溶かした話</title>
   <dc:creator>Ken Osumi</dc:creator>
   <link>https://kenosumi.com/ja/posts/reproducing-esmc-sae/</link>
