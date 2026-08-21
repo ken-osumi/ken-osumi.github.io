@@ -1,0 +1,5 @@
+blank_id,run_id,sensorgram_filepath
+1,1,data/blanks/sensorgrams/sg_blank1.png
+2,2,data/blanks/sensorgrams/sg_blank2.png
+3,3,data/blanks/sensorgrams/sg_blank3.png
+4,4,data/blanks/sensorgrams/sg_blank4.png

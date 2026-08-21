@@ -4,6 +4,9 @@ description: "Seven of ten designs bound. Everything I used was public and free.
 author: "Ken Osumi"
 date: "2026-08-21"
 categories: [binder-design, tnfa, optimization]
+resources:
+  - data/*.csv
+  - data/tnfa_kinetics/*.csv
 ---
 
 **What did I have that Anthropic didn't?**
@@ -86,7 +89,7 @@ Why that term and not another? **An optimizer will push on anything you put in a
 
 I chose the epitope with my own eyes — structure and surface hydrophobicity, a hydrophobic patch spanning the seam. **Anthropic's claim is about autonomy: "it chose where on each protein target to design against." That is the one stage I never had to automate.**
 
-Sequences, engine scores and the full binding data are being released, and I will link them from this page.
+All twenty sequences from both arms, the per-engine scores behind the selection, and the binding kinetics are [in the data folder for this post](data/) under ODC-BY. Anthropic's numbers can be rebuilt from [their release](https://huggingface.co/datasets/Anthropic/claude-protein-binder-design).
 
 **So what did I have that Anthropic didn't?** A loop that refused to let go, and a pair of human eyes that happened to be looking. **Neither one needs a frontier lab's budget.**
 
