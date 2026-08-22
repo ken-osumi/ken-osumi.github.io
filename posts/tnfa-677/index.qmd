@@ -1,6 +1,6 @@
 ---
-title: "How I Beat Claude on TNFα for $677"
-description: "Seven of ten designs bound. Everything I used was public and free. The one step that mattered was written down in 2003."
+title: "How I Beat Claude at Protein Design for $677"
+description: "Anthropic gave Claude $27,100 and let it design binders against TNFα, a target de novo design keeps failing on. 8% of its 150 designs bound. I gave the same model $677, and 70% of my ten did. The difference was one step that Kuhlman and Baker described in 2003 and that seems to have been forgotten since — the kind of thing a one-person team can still find first."
 author: "Ken Osumi"
 date: "2026-08-21"
 categories: [binder-design, tnfa, optimization]
