@@ -1,6 +1,6 @@
 ---
 title: "How I Beat Claude at Protein Design for $677"
-description: "Anthropic spent about $27,100 in compute on TNFα and obtained binders from 8% of 150 designs. My campaign cost $677 and produced binders from seven of ten. This post describes the optimization stage that differed between the two campaigns."
+description: "Anthropic spent about $27,100 in compute on TNFα and obtained binders from 8% of 150 designs. My campaign cost $677 and produced binders from seven of ten. The difference was not better starting backbones, but what happened to them during sequence optimization."
 author: "Ken Osumi"
 date: "2026-08-21"
 categories: [binder-design, tnfa, optimization]
@@ -11,66 +11,68 @@ resources:
 
 Anthropic reported 12 binders among 150 designs against TNFα, with an estimated compute cost of $27,100. In my campaign, seven of ten designs bound, and the compute bill was $677.
 
-The campaigns used the same target, contract lab, assay, month, and compute provider. Claude was involved in both, although the design pipelines differed.
+The campaigns used the same target, contract lab, assay, month, and compute provider. Claude was involved in both. The main difference was not that my pipeline generated better starting backbones. It was able to improve ordinary ones instead of discarding them when their sequences changed.
 
-An important difference in my pipeline was an optimization stage that preserved a candidate's pose while its sequence changed. In a comparison arm without this stage, one of ten designs bound. In the optimized arm, seven of ten bound.
+That distinction matters more on TNFα than it would on an easy target.
 
-The experiments below describe how this optimization stage worked and why it may have reduced the compute required.
+## Why TNFα normally requires more sampling
 
-## Previous results on TNFα
+TNFα is a homotrimer, and its receptor-binding surface runs along the seam between two subunits. DeepMind described the site as flat and highly polar, with relatively few hydrophobic contacts available for binding.
 
-TNFα is a difficult binder target. It is a homotrimer, and the receptor-binding surface runs along the seam between two subunits. DeepMind described the site as flat and highly polar, with relatively few hydrophobic contacts available for binding.
-
-Four published campaigns had tested 169 designs against human TNFα before August. AlphaProteo reported 0 of 54, PXDesign 0 of 20, BoltzGen 0 of 35, and Anthropic's earlier Mythos Preview 0 of 60. Anthropic's new result, with 12 binders among 150 designs, was the first published non-zero campaign.
+Before August, four published campaigns had tested 169 designs against human TNFα. AlphaProteo reported 0 of 54, PXDesign 0 of 20, BoltzGen 0 of 35, and Anthropic's earlier Mythos Preview 0 of 60. Anthropic's new result, with 12 binders among 150 designs, was the first published non-zero campaign.
 
 ![Human TNF&alpha;: published de novo binder campaigns and their compute cost.](tnfa-scoreboard.png)
 
-My campaign relied entirely on publicly available models and software. Backbones came from PXDesign, RFdiffusion3, and Complexa. ProteinMPNN generated sequences. Public filters removed clashes and weak hotspot contacts, Boltz-2 screened the remaining candidates, and mosaic, the optimization library released by Escalante Bio, performed the final sequence optimization.
+One response to a difficult surface is to generate and screen more backbones. That is reasonable: if only a small fraction begin in a useful pose, broader sampling increases the chance of finding one.
 
-The actual compute bills were $27,100 and $677, a 40-fold difference. Because the campaigns used different hardware, this does not imply a 40-fold difference in productivity per GPU-hour. At Anthropic's published rate of $4 per H100-hour, my 353 GPU-hours would have cost $1,412, or about one nineteenth of Anthropic's estimated compute budget.
+My campaign spent relatively little compute that way. Backbone generation accounted for 14% of the total, while sequence optimization accounted for 46%. The pipeline relied entirely on public software: PXDesign, RFdiffusion3, and Complexa for backbones; ProteinMPNN for sequences; public hotspot and clash filters; and Boltz-2 for screening. I used mosaic, Escalante Bio's JAX framework, to combine the models, loss terms, and optimizer. Mosaic provided the framework, but not the trunk-state injection described below.
 
-The allocation of compute was also different from what might be expected. In my run, 46% went into optimization and 14% into backbone generation. Most of the work therefore went into improving existing candidates rather than generating more backbones.
+The actual compute bills were $27,100 and $677, a 40-fold difference. The hardware was different, so this does not imply a 40-fold difference in productivity per GPU-hour. At Anthropic's published rate of $4 per H100-hour, my 353 GPU-hours would have cost $1,412, or about one nineteenth of Anthropic's estimated budget.
 
-## Preserving the pose during sequence optimization
+The lower cost therefore did not come from a private model or from replacing optimization with a cheap filter. It came from doing more with each backbone after it had been generated.
 
-Hallucination-based binder design begins with a sequence and a predicted complex. The optimizer changes the sequence, predicts the complex again, and follows gradients toward a better score. Repeated hundreds of times, this can turn an accidental contact into a designed interface.
+## Why sequence optimization loses good backbones
 
-Each new prediction can also produce a different pose or fold. The binder may dock to another face of the target or adopt a different topology. In that case, an improved score no longer refers to the same structure that was present at the beginning of optimization.
+Hallucination-based binder design begins with a sequence and a predicted complex. The optimizer changes the sequence, predicts the complex again, and follows gradients toward a better score. After hundreds of iterations, this can turn an initial contact into a designed interface.
 
-In my loop, the predictor's trunk representation is carried from one sequence update into the next rather than reinitialized. This allows the predicted structure to change continuously as the sequence is updated. In these runs, 57% of the residues could change while the overall pose and topology remained similar to the starting design.
+But the structure predictor normally starts each iteration with a fresh internal state. Once the sequence changes, the next prediction may place the binder on another part of the target or give it a different fold. The score can improve even though it now describes a different structure from the one that was selected at the beginning.
 
-This changes the requirements for the starting backbone. If sequence updates frequently cause redocking, a successful design needs to begin from an unusually good backbone, which requires extensive sampling. Preserving the pose allows lower-scoring starting backbones to undergo more sequence optimization without changing the intended interface.
+This limits how far a sequence can be optimized. If the intended pose disappears after a few updates, the pipeline depends on finding a backbone that is already close to a solution. More backbone sampling compensates for the short optimization range.
 
-The same order included a direct comparison. Ten designs used the same generators, seeds, hotspots, and selection procedure but omitted this optimization stage. Both groups were tested on the same plate and day. One of ten designs bound in the comparison arm, compared with seven of ten in the optimized arm.
+Before sequence optimization, I ran Boltz-2 on the existing target–binder complex and saved its trunk representation. During optimization, that representation was injected into the next prediction as its initial recycling state, and the updated trunk state was passed from one step to the next. The model therefore retained information about the binder's position and structure while the sequence changed. In these runs, 57% of the residues could change while the overall pose and topology remained similar to the starting design.
 
-The comparison includes only twenty proteins, but it provides the most direct evidence for the optimization stage in this campaign. A possible explanation for the lower compute requirement is that fewer candidates were lost to changes in pose or topology during sequence optimization.
+The method does not make a poor backbone good by itself. It gives the optimizer more room to search for a sequence that supports the selected interface. A plausible starting backbone can therefore be refined instead of being replaced by another round of generation.
 
-## Constraining sequence–structure compatibility
+The same experimental order included a direct comparison. Ten designs used the same generators, seeds, hotspots, and selection procedure but omitted this optimization stage. Both groups were tested on the same plate and day. One of ten designs bound in the comparison arm, compared with seven of ten in the optimized arm.
 
-Reusing the trunk representation introduces a separate problem. The predictor may remain confident partly because its own internal state is being passed into the next iteration. Confidence within this loop is therefore not an independent measure of molecular quality.
+This result supports the idea that preserving the pose made the existing backbones more useful. It also introduces a separate concern: a predictor may remain confident simply because its own internal state is being passed from one iteration to the next.
 
-I used ProteinMPNN to constrain sequence–structure compatibility. Mosaic includes an inverse-folding loss that rewards sequences compatible with the current backbone. Its default weight was 10. I initially expected this weight to restrict the search too strongly and lowered it to about 1.5.
+## Preventing the loop from confirming itself
 
-At the lower weight, the optimization completed normally and its loss decreased. The problem appeared during downstream evaluation: independent co-folding engines did not identify candidates worth ordering. After I restored the weight to 10, candidates again passed this downstream evaluation.
+Confidence inside a recurrent optimization loop is not an independent measure of molecular quality. The predictor may preserve a pose without producing a sequence that another model would place in the same structure.
 
-ProteinMPNN can also be exploited by an optimizer, so this result does not make its score an independent validation. In this experiment, however, the higher ProteinMPNN weight produced sequences whose predicted structures were more consistent across separate co-folding engines.
+I used ProteinMPNN to constrain this part of the search. Mosaic includes an inverse-folding loss that rewards sequences compatible with the current backbone. Its default weight was 10. I initially expected that weight to restrict the search too strongly, so I lowered it to about 1.5.
 
-This result follows a principle described in the 2003 Top7 paper. Brian Kuhlman and David Baker cycled between sequence design and backbone optimization because backbones generated without considering side-chain packing did not necessarily have low-energy sequences. Their procedure therefore optimized sequence and structure together.
+The optimization itself appeared normal. Its loss decreased and the runs completed. The problem became visible only during downstream evaluation: independent co-folding engines did not identify candidates worth ordering.
 
-The implementation here is different, but it applies the same constraint. Carrying the trunk representation keeps structural changes continuous as the sequence changes. The inverse-folding term favors sequences that remain compatible with those structures. Used together, they reduce the chance that sequence optimization ends with a different pose or with a sequence that does not support the predicted backbone.
+When I restored the ProteinMPNN weight to 10, candidates again passed the downstream evaluation. ProteinMPNN can also be exploited by an optimizer, so this is not an independent experimental validation. In these runs, however, the stronger inverse-folding constraint produced sequences whose predicted structures were more consistent across separate co-folding engines.
 
-## Scope of the comparison
+The two parts of the optimization serve different purposes. Injecting the trunk representation into successive steps keeps the binder near the original position and structure as its sequence changes. The ProteinMPNN term favors sequences that remain compatible with that structure. Without the first, optimization cannot move far from the starting sequence before the pose changes. Without the second, it can preserve a structure that other predictors do not recover.
 
-I also chose the epitope myself, by inspecting the structure and surface hydrophobicity. Anthropic's experiment tested whether Claude could choose where to design autonomously; mine did not. The human contribution was therefore not limited to arranging the optimization loop.
+This is a modern implementation of an older design principle. In the 2003 Top7 paper, Brian Kuhlman and David Baker cycled between sequence design and backbone optimization because backbones generated without considering side-chain packing did not necessarily have low-energy sequences. Their solution was to optimize sequence and structure together.
 
-The same optimized-versus-unoptimized comparison on PD-L1 produced four binders out of ten, compared with one out of ten in the unoptimized arm. The effect was smaller than for TNFα, and results from two targets are not sufficient to establish general performance.
+## What the comparison shows
 
-These are binding results rather than functional results. I have not yet run a TNFR1 competition assay, so the data do not show that any design inhibits TNFα. The two campaigns also used different ACROBiosystems human TNFα SKUs. These differences limit the comparison between my campaign and Anthropic's, although they do not affect the seven-of-ten versus one-of-ten comparison measured on the same plate in my experiment.
+I chose the epitope myself by inspecting the structure and surface hydrophobicity. Anthropic's experiment tested whether Claude could choose where to design autonomously; mine did not. The comparison is therefore between two complete design procedures, not between identical autonomous agents given different compute budgets.
+
+The same optimized-versus-unoptimized comparison on PD-L1 produced four binders out of ten, compared with one out of ten in the unoptimized arm. The effect was smaller than for TNFα, and two targets are not enough to establish general performance.
+
+These are also binding results rather than functional results. I have not run a TNFR1 competition assay, so the data do not show that any design inhibits TNFα. The Anthropic campaign and mine used different ACROBiosystems human TNFα SKUs. Those differences limit the comparison between campaigns, although they do not affect the seven-of-ten versus one-of-ten comparison measured on the same plate in my experiment.
 
 All twenty sequences, their per-engine scores, and the binding kinetics are [in the data folder for this post](data/) under ODC-BY. Anthropic's numbers can be reconstructed from [its released dataset](https://huggingface.co/datasets/Anthropic/claude-protein-binder-design).
 
-My interpretation is that the lower compute cost came from reducing the amount of backbone sampling required at the start. The pipeline could begin with a plausible backbone, preserve its pose during sequence updates, and use the ProteinMPNN loss to maintain compatibility between the evolving sequence and structure.
+The practical difference in this campaign was simple. Instead of spending most of the budget searching for a backbone that already had the right sequence nearby, the pipeline kept the intended pose long enough to search further around each backbone. The comparison arm suggests that this changed what reached the plate: one binder out of ten without the optimization stage, and seven out of ten with it.
 
 ---
 
-Both cost figures exclude wet-lab work. The trunk-carrying method is patent pending.
+Both cost figures exclude wet-lab work. This trunk-conditioning method is patent pending.
