@@ -33,13 +33,15 @@ The lower cost therefore did not come from a private model or from replacing opt
 
 ## Why sequence optimization loses good backbones
 
-Hallucination-based binder design begins with a sequence and a predicted complex. The optimizer changes the sequence, predicts the complex again, and follows gradients toward a better score. After hundreds of iterations, this can turn an initial contact into a designed interface.
+Hallucination-based binder design usually begins with a random binder sequence. The sequence and target are passed through a structure predictor, gradients update the sequence toward a better score, and the process repeats. Because the initial contact is accidental, standard hallucination gives limited control over where on the target the binder docks or what binding pose it adopts.
 
 But the structure predictor normally starts each iteration with a fresh internal state. Once the sequence changes, the next prediction may place the binder on another part of the target or give it a different fold. The score can improve even though it now describes a different structure from the one that was selected at the beginning.
 
 This limits how far a sequence can be optimized. If the intended pose disappears after a few updates, the pipeline depends on finding a backbone that is already close to a solution. More backbone sampling compensates for the short optimization range.
 
-Before sequence optimization, I ran Boltz-2 on the existing target–binder complex and saved its trunk representation. During optimization, that representation was injected into the next prediction as its initial recycling state, and the updated trunk state was passed from one step to the next. The model therefore retained information about the binder's position and structure while the sequence changed. In these runs, 57% of the residues could change while the overall pose and topology remained similar to the starting design.
+My implementation still began sequence optimization from a random sequence. What it inherited from the existing target–binder complex was not the sequence, but Boltz-2's trunk representation. I saved that representation before optimization, injected it into the first prediction as its initial recycling state, and then passed the updated trunk state from one step to the next. The model therefore retained information about the binder's position and structure while the sequence changed.
+
+The production run used 115 optimization steps, divided into phases of 50, 50, and 15. By the end, the optimized sequences differed from their original candidate sequences at about half of their positions, 57% in these runs, while the overall pose and topology remained similar to the starting design.
 
 The method does not make a poor backbone good by itself. It gives the optimizer more room to search for a sequence that supports the selected interface. A plausible starting backbone can therefore be refined instead of being replaced by another round of generation.
 

@@ -40,10 +40,11 @@
 </section>
 <section id="why-sequence-optimization-loses-good-backbones" class="level2">
 <h2 class="anchored" data-anchor-id="why-sequence-optimization-loses-good-backbones">Why sequence optimization loses good backbones</h2>
-<p>Hallucination-based binder design begins with a sequence and a predicted complex. The optimizer changes the sequence, predicts the complex again, and follows gradients toward a better score. After hundreds of iterations, this can turn an initial contact into a designed interface.</p>
+<p>Hallucination-based binder design usually begins with a random binder sequence. The sequence and target are passed through a structure predictor, gradients update the sequence toward a better score, and the process repeats. Because the initial contact is accidental, standard hallucination gives limited control over where on the target the binder docks or what binding pose it adopts.</p>
 <p>But the structure predictor normally starts each iteration with a fresh internal state. Once the sequence changes, the next prediction may place the binder on another part of the target or give it a different fold. The score can improve even though it now describes a different structure from the one that was selected at the beginning.</p>
 <p>This limits how far a sequence can be optimized. If the intended pose disappears after a few updates, the pipeline depends on finding a backbone that is already close to a solution. More backbone sampling compensates for the short optimization range.</p>
-<p>Before sequence optimization, I ran Boltz-2 on the existing target–binder complex and saved its trunk representation. During optimization, that representation was injected into the next prediction as its initial recycling state, and the updated trunk state was passed from one step to the next. The model therefore retained information about the binder’s position and structure while the sequence changed. In these runs, 57% of the residues could change while the overall pose and topology remained similar to the starting design.</p>
+<p>My implementation still began sequence optimization from a random sequence. What it inherited from the existing target–binder complex was not the sequence, but Boltz-2’s trunk representation. I saved that representation before optimization, injected it into the first prediction as its initial recycling state, and then passed the updated trunk state from one step to the next. The model therefore retained information about the binder’s position and structure while the sequence changed.</p>
+<p>The production run used 115 optimization steps, divided into phases of 50, 50, and 15. By the end, the optimized sequences differed from their original candidate sequences at about half of their positions, 57% in these runs, while the overall pose and topology remained similar to the starting design.</p>
 <p>The method does not make a poor backbone good by itself. It gives the optimizer more room to search for a sequence that supports the selected interface. A plausible starting backbone can therefore be refined instead of being replaced by another round of generation.</p>
 <p>The same experimental order included a direct comparison. Ten designs used the same generators, seeds, hotspots, and selection procedure but omitted this optimization stage. Both groups were tested on the same plate and day. One of ten designs bound in the comparison arm, compared with seven of ten in the optimized arm.</p>
 <p>This result supports the idea that preserving the pose made the existing backbones more useful. It also introduces a separate concern: a predictor may remain confident simply because its own internal state is being passed from one iteration to the next.</p>
@@ -702,7 +703,7 @@ Note
 
  ]]></description>
   <guid>https://kenosumi.com/posts/tnfa-677/data/tnfa_kinetics/binding_models.html</guid>
-  <pubDate>Tue, 25 Aug 2026 04:53:59 GMT</pubDate>
+  <pubDate>Tue, 25 Aug 2026 06:47:17 GMT</pubDate>
 </item>
 <item>
   <title>Data — I Beat Claude on TNFα for $677</title>
@@ -768,7 +769,7 @@ Note
 
  ]]></description>
   <guid>https://kenosumi.com/posts/tnfa-677/data/</guid>
-  <pubDate>Tue, 25 Aug 2026 04:53:59 GMT</pubDate>
+  <pubDate>Tue, 25 Aug 2026 06:47:17 GMT</pubDate>
 </item>
 </channel>
 </rss>
