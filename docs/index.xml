@@ -20,62 +20,51 @@
 
 
 
-<p><strong>What did I have that Anthropic didn’t?</strong></p>
-<p>Less of everything. Fewer GPUs, no wet lab, no employees, no model of my own. Same protein target, same contract lab, same assay, same month, and we rented compute from the same company. <strong>Seven of my ten designs bound.</strong> Of their 150, twelve did — 8% across their models, 13% for their best one. They put roughly $27,100 of compute into that target. My invoice for the whole campaign was $677.*</p>
-<p>The difference sits in one stage of a loop, and what that stage does was written down in 2003.</p>
-<p>Both numbers depend on how hard TNFα is.</p>
-<section id="four-campaigns-169-designs-zero-binders" class="level2">
-<h2 class="anchored" data-anchor-id="four-campaigns-169-designs-zero-binders">Four campaigns, 169 designs, zero binders</h2>
-<p>That was the public record before August. DeepMind’s AlphaProteo: 0 of 54. ByteDance’s PXDesign: 0 of 20. MIT’s BoltzGen: 0 of 35. Even Anthropic’s own Mythos Preview, which averages 35.1% across targets in single-target mode, went 0 of 60 here.</p>
-<p>DeepMind wrote down the reason in their own paper: a “flat, highly polar binding site at an interface between 2 subunits in a homotrimer.” The site runs along the seam between two chains, and there is almost no grease on it.</p>
-<p>The first non-zero anyone published on TNFα was Anthropic’s. <strong>On a target that had produced nothing, 13% is a real result.</strong></p>
+<p>Anthropic reported 12 binders among 150 designs against TNFα, with an estimated compute cost of $27,100. In my campaign, seven of ten designs bound, and the compute bill was $677.</p>
+<p>The campaigns used the same target, contract lab, assay, month, and compute provider. Claude was involved in both, although the design pipelines differed.</p>
+<p>An important difference in my pipeline was an optimization stage that preserved a candidate’s pose while its sequence changed. In a comparison arm without this stage, one of ten designs bound. In the optimized arm, seven of ten bound.</p>
+<p>The experiments below describe how this optimization stage worked and why it may have reduced the compute required.</p>
+<section id="previous-results-on-tnfα" class="level2">
+<h2 class="anchored" data-anchor-id="previous-results-on-tnfα">Previous results on TNFα</h2>
+<p>TNFα is a difficult binder target. It is a homotrimer, and the receptor-binding surface runs along the seam between two subunits. DeepMind described the site as flat and highly polar, with relatively few hydrophobic contacts available for binding.</p>
+<p>Four published campaigns had tested 169 designs against human TNFα before August. AlphaProteo reported 0 of 54, PXDesign 0 of 20, BoltzGen 0 of 35, and Anthropic’s earlier Mythos Preview 0 of 60. Anthropic’s new result, with 12 binders among 150 designs, was the first published non-zero campaign.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://kenosumi.com/posts/tnfa-677/tnfa-scoreboard.png" class="img-fluid figure-img"></p>
-<figcaption>Human TNFα: every published de novo binder campaign, and what the compute cost.</figcaption>
+<figcaption>Human TNFα: published de novo binder campaigns and their compute cost.</figcaption>
 </figure>
 </div>
-<p>Honestly, none of that surprises me. Opus 4.8 is better at this work than I am, and better than most researchers I know. Anthropic gave it $27,100 and let it run alone. I gave the same model $677 and sat next to it. <strong>The one stage that made the difference is an algorithm we worked out together.</strong></p>
-<p>So the question is not whether the machine beats the person. <strong>It is whether the design side is finished. It is not.</strong> There is still ground to be found in how the algorithm is arranged, <strong>and a small team can get there first.</strong></p>
+<p>My campaign relied entirely on publicly available models and software. Backbones came from PXDesign, RFdiffusion3, and Complexa. ProteinMPNN generated sequences. Public filters removed clashes and weak hotspot contacts, Boltz-2 screened the remaining candidates, and mosaic, the optimization library released by Escalante Bio, performed the final sequence optimization.</p>
+<p>The actual compute bills were $27,100 and $677, a 40-fold difference. Because the campaigns used different hardware, this does not imply a 40-fold difference in productivity per GPU-hour. At Anthropic’s published rate of $4 per H100-hour, my 353 GPU-hours would have cost $1,412, or about one nineteenth of Anthropic’s estimated compute budget.</p>
+<p>The allocation of compute was also different from what might be expected. In my run, 46% went into optimization and 14% into backbone generation. Most of the work therefore went into improving existing candidates rather than generating more backbones.</p>
 </section>
-<section id="a-binder-entirely-off-the-shelf" class="level2">
-<h2 class="anchored" data-anchor-id="a-binder-entirely-off-the-shelf">$97 a binder, entirely off the shelf</h2>
-<p>Both campaigns ran on Modal, so the comparison is unusually clean. Anthropic published their budgets: $10,000 for a 24-hour single-target campaign, $50,000 for a 48-hour run across 14 targets, both at $4.00 per H100-hour. Four of those runs hit TNFα, which prorates to about 6,800 H100-hours and $27,100, spent in full. Mine was 353 GPU-hours, ten jobs in parallel, 36.6 hours of wall clock — <strong>$2,258 a binder against $97, a 40x gap that survives normalization:</strong> mine were not H100s, but priced at Anthropic’s own rate my hours would still have come to $1,412.</p>
-<p>The stack is as ordinary as the bill: PXDesign, RFdiffusion3 and Complexa for backbones, ProteinMPNN for sequences, hotspot and clash filters, a Boltz-2 screen, and mosaic — the design library Escalante Bio open-sourced — for the optimization. All public, all free, all available to Anthropic from the start. <strong>Anyone reading this can install it this afternoon.</strong></p>
-<p>What is not ordinary is where the hours went. <strong>46% into the optimization stage; 14% into backbone generation, the step most people picture when they say “design.”</strong></p>
+<section id="preserving-the-pose-during-sequence-optimization" class="level2">
+<h2 class="anchored" data-anchor-id="preserving-the-pose-during-sequence-optimization">Preserving the pose during sequence optimization</h2>
+<p>Hallucination-based binder design begins with a sequence and a predicted complex. The optimizer changes the sequence, predicts the complex again, and follows gradients toward a better score. Repeated hundreds of times, this can turn an accidental contact into a designed interface.</p>
+<p>Each new prediction can also produce a different pose or fold. The binder may dock to another face of the target or adopt a different topology. In that case, an improved score no longer refers to the same structure that was present at the beginning of optimization.</p>
+<p>In my loop, the predictor’s trunk representation is carried from one sequence update into the next rather than reinitialized. This allows the predicted structure to change continuously as the sequence is updated. In these runs, 57% of the residues could change while the overall pose and topology remained similar to the starting design.</p>
+<p>This changes the requirements for the starting backbone. If sequence updates frequently cause redocking, a successful design needs to begin from an unusually good backbone, which requires extensive sampling. Preserving the pose allows lower-scoring starting backbones to undergo more sequence optimization without changing the intended interface.</p>
+<p>The same order included a direct comparison. Ten designs used the same generators, seeds, hotspots, and selection procedure but omitted this optimization stage. Both groups were tested on the same plate and day. One of ten designs bound in the comparison arm, compared with seven of ten in the optimized arm.</p>
+<p>The comparison includes only twenty proteins, but it provides the most direct evidence for the optimization stage in this campaign. A possible explanation for the lower compute requirement is that fewer candidates were lost to changes in pose or topology during sequence optimization.</p>
 </section>
-<section id="optimizing-sequence-and-structure-at-the-same-time" class="level2">
-<h2 class="anchored" data-anchor-id="optimizing-sequence-and-structure-at-the-same-time">Optimizing sequence and structure at the same time</h2>
-<p>Hallucination-based binder design — what BindCraft does — starts from a random sequence and runs it through a structure predictor together with the target, where it touches the surface somewhere by accident. <strong>You take gradients that strengthen that contact and the binder’s own fold, rewrite the sequence, and predict again</strong>, hundreds of times, until something that merely touched has become something that binds. I run this loop with Boltz-2. <strong>It runs over sequences, not inside a single prediction.</strong></p>
-<p>It has a quiet failure mode. Reinitialize the predictor’s internal state at every step and <strong>nothing holds the binder against the target.</strong> It re-docks onto a different face, or refolds into a different topology, and the optimizer keeps improving the score of a molecule that is no longer the one it was seeded with. <strong>The sequence gets better. The molecule gets worse. The loss says nothing.</strong></p>
-<p>So I stopped reinitializing. The trunk representation carries across sequence updates and feeds forward as the initial state for the next prediction.** With it, <strong>57% of the sequence can turn over and the design is still the same design.</strong> You commit to a shape, then search a long way out for the sequence that best produces it.</p>
-<p>As it happens, the same order included ten more designs: same generators, same seeds, same hotspots, same selection, same plate, same day, <strong>with that one stage switched off. One of the ten bound.</strong>***</p>
-<p><strong>It is also where the $677 comes from.</strong> Without the pose held, your starting point has to be good, and finding good starting points is where the compute goes. Hold it, and cheap mediocre seeds will do, <strong>because you can rewrite them a long way.</strong></p>
-<p>But the whole walk is now steered by a predictor scoring a molecule it is helping to hold in place. <strong>A predictor staying confident about its own molecule is not evidence of anything.</strong> It could just as easily be a more elaborate way of fooling yourself.</p>
-<p><strong>So how do you tell the difference?</strong></p>
+<section id="constraining-sequencestructure-compatibility" class="level2">
+<h2 class="anchored" data-anchor-id="constraining-sequencestructure-compatibility">Constraining sequence–structure compatibility</h2>
+<p>Reusing the trunk representation introduces a separate problem. The predictor may remain confident partly because its own internal state is being passed into the next iteration. Confidence within this loop is therefore not an independent measure of molecular quality.</p>
+<p>I used ProteinMPNN to constrain sequence–structure compatibility. Mosaic includes an inverse-folding loss that rewards sequences compatible with the current backbone. Its default weight was 10. I initially expected this weight to restrict the search too strongly and lowered it to about 1.5.</p>
+<p>At the lower weight, the optimization completed normally and its loss decreased. The problem appeared during downstream evaluation: independent co-folding engines did not identify candidates worth ordering. After I restored the weight to 10, candidates again passed this downstream evaluation.</p>
+<p>ProteinMPNN can also be exploited by an optimizer, so this result does not make its score an independent validation. In this experiment, however, the higher ProteinMPNN weight produced sequences whose predicted structures were more consistent across separate co-folding engines.</p>
+<p>This result follows a principle described in the 2003 Top7 paper. Brian Kuhlman and David Baker cycled between sequence design and backbone optimization because backbones generated without considering side-chain packing did not necessarily have low-energy sequences. Their procedure therefore optimized sequence and structure together.</p>
+<p>The implementation here is different, but it applies the same constraint. Carrying the trunk representation keeps structural changes continuous as the sequence changes. The inverse-folding term favors sequences that remain compatible with those structures. Used together, they reduce the chance that sequence optimization ends with a different pose or with a sequence that does not support the predicted backbone.</p>
 </section>
-<section id="what-was-written-down-in-2003" class="level2">
-<h2 class="anchored" data-anchor-id="what-was-written-down-in-2003">What was written down in 2003</h2>
-<p><strong>A section heading in a 2003 paper reads “Simultaneous optimization of sequence and structure.”</strong></p>
-<p>That is Kuhlman and Baker’s Top7 paper. The section opens: “The critical feature of the design protocol is the cycling between sequence design and backbone optimization. The goal of the backbone optimization step, to identify the lowest free energy backbone conformation for a fixed amino acid sequence, <strong>is formally analogous to the high-resolution structure prediction problem</strong>, and we used the Rosetta program, which we developed for structure prediction.”</p>
-<p>What they found matters more. <strong>Backbones generated without regard to side-chain packing have no low-energy sequences at all.</strong> Sequence design and backbone flexibility have to be coupled — a warning, 23 years ago, against pulling them apart.</p>
-<p>The neural era pulled them apart. BindCraft, the most widely used open pipeline, applies ProteinMPNN <strong>to the surface and core while keeping the interface intact</strong>, then filters survivors with an AF2 monomer prediction. <strong>The cycle moved outside the design loop and became a gatekeeper that skips the interface.</strong></p>
-<p><strong>Escalante Bio put a piece of it back inside</strong>, running ProteinMPNN’s inverse-folding term in the loss with gradients through it, at a weight of 10, because structures that are easy to inverse fold tend to be more soluble and stable.</p>
-<p>I thought 10 was over-constraining. <strong>Pin the sequence that hard and the search should suffocate.</strong> I lowered it to about 1.5, roughly 30% of total loss.</p>
-<p><strong>The loop ran fine.</strong> The loss came down, the run completed. <strong>What broke was downstream:</strong> push those sequences through the co-folding engines and nothing worth ordering comes out. Put the weight back to 10 and good designs appear at the same step.</p>
-<p>That is how you tell. <strong>What that term predicts is not what happens inside the loop. It is what happens outside it.</strong> An optimizer will push on anything you put in a loss; what differs is what waits at the end of the push. Push on co-folding confidence and you find inputs that make the predictor more certain — which is not the molecule being better, and <strong>none of it travels outside the loop.</strong> Push on ProteinMPNN and there are still shortcuts — sequences MPNN likes in general — but <strong>what sits at the end of them is much closer to what you wanted.</strong></p>
-<p><strong>Carrying the trunk is what lets you push it that hard</strong>: the structure follows the sequence continuously instead of jumping to a different basin, which is the 2003 requirement holding inside a neural predictor. Candidates whose shape and sequence disagree never reach a plate.</p>
-<p><strong>Cutting that wasted search is what seven of ten and $677 are made of.</strong></p>
-</section>
-<section id="what-i-did-have" class="level2">
-<h2 class="anchored" data-anchor-id="what-i-did-have">What I did have</h2>
-<p>I chose the epitope with my own eyes — structure and surface hydrophobicity, a hydrophobic patch spanning the seam. <strong>Anthropic’s claim is about autonomy: “it chose where on each protein target to design against.” That is the one stage I never had to automate.</strong></p>
-<p>All twenty sequences from both arms, the per-engine scores behind the selection, and the binding kinetics are <a href="data/">in the data folder for this post</a> under ODC-BY. Anthropic’s numbers can be rebuilt from <a href="https://huggingface.co/datasets/Anthropic/claude-protein-binder-design">their release</a>.</p>
-<p><strong>So what did I have that Anthropic didn’t?</strong> A loop that refused to let go, and a pair of human eyes that happened to be looking. <strong>Neither one needs a frontier lab’s budget.</strong></p>
+<section id="scope-of-the-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="scope-of-the-comparison">Scope of the comparison</h2>
+<p>I also chose the epitope myself, by inspecting the structure and surface hydrophobicity. Anthropic’s experiment tested whether Claude could choose where to design autonomously; mine did not. The human contribution was therefore not limited to arranging the optimization loop.</p>
+<p>The same optimized-versus-unoptimized comparison on PD-L1 produced four binders out of ten, compared with one out of ten in the unoptimized arm. The effect was smaller than for TNFα, and results from two targets are not sufficient to establish general performance.</p>
+<p>These are binding results rather than functional results. I have not yet run a TNFR1 competition assay, so the data do not show that any design inhibits TNFα. The two campaigns also used different ACROBiosystems human TNFα SKUs. These differences limit the comparison between my campaign and Anthropic’s, although they do not affect the seven-of-ten versus one-of-ten comparison measured on the same plate in my experiment.</p>
+<p>All twenty sequences, their per-engine scores, and the binding kinetics are <a href="data/">in the data folder for this post</a> under ODC-BY. Anthropic’s numbers can be reconstructed from <a href="https://huggingface.co/datasets/Anthropic/claude-protein-binder-design">its released dataset</a>.</p>
+<p>My interpretation is that the lower compute cost came from reducing the amount of backbone sampling required at the start. The pipeline could begin with a plausible backbone, preserve its pose during sequence updates, and use the ProteinMPNN loss to maintain compatibility between the evolving sequence and structure.</p>
 <hr>
-<p>* Both figures are compute only and exclude wet lab.</p>
-<p>** Patent pending.</p>
-<p>*** One target, ten designs per arm. The same comparison on a second target, PD-L1, gives four of ten against one of ten — real, and smaller. The run is not closed: 19 of 20 designs have both replicates and one of my hits currently has one. Call it six of ten if you prefer. This is a hit-rate result and says nothing about affinity or function; binding is not inhibition and I have run no TNFR1 competition assay. Both antigens were ACROBiosystems human TNFα but different SKUs: theirs TNA-H5228, mine TNA-H4211, the one MIT used for BoltzGen.</p>
+<p>Both cost figures exclude wet-lab work. The trunk-carrying method is patent pending.</p>
 
 
 <!-- -->
@@ -712,7 +701,7 @@ Note
 
  ]]></description>
   <guid>https://kenosumi.com/posts/tnfa-677/data/tnfa_kinetics/binding_models.html</guid>
-  <pubDate>Sat, 22 Aug 2026 08:15:56 GMT</pubDate>
+  <pubDate>Tue, 25 Aug 2026 03:25:49 GMT</pubDate>
 </item>
 <item>
   <title>Data — I Beat Claude on TNFα for $677</title>
@@ -778,7 +767,7 @@ Note
 
  ]]></description>
   <guid>https://kenosumi.com/posts/tnfa-677/data/</guid>
-  <pubDate>Sat, 22 Aug 2026 08:15:56 GMT</pubDate>
+  <pubDate>Tue, 25 Aug 2026 03:25:49 GMT</pubDate>
 </item>
 </channel>
 </rss>
